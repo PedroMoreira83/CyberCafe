@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 node_modules/
 .env
 db.js
 .DS_Store
+=======
+backend/node_modules
+backend/.env
+>>>>>>> e593332 (Commit inicial da Arena Gamer)

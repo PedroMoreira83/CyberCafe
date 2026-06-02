@@ -1,0 +1,47 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: pbd_alunos_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: arena_gamer
+      MYSQL_USER: app
+      MYSQL_PASSWORD: apassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pbd_alunos_app
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+        - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_USER: app
+      DB_PASSWORD: apassword
+      DB_NAME: arena_gamer
+    volumes:
+      - ./backend:/usr/src/app/backend
+      - ./frontend:/usr/src/app/frontend
+      - backend_node_modules:/usr/src/app/backend/node_modules
+    command: npm start
+
+volumes:
+  db_data:
+  backend_node_modules:
